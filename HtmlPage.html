@@ -1,0 +1,248 @@
+﻿@{
+//Session Placeholder Declarations/Definitions
+
+var salutation = "Customer"; if(Model.Customer != null && string.IsNullOrEmpty(Model.Customer.FirstName) == false) { salutation = String.Format("{0},", Model.Customer.FirstName); }
+var currencysymbol = @Model.CurrencyCode;
+var email = @Model.Customer.Email;
+var hn = @TryGetSessionField("hn");
+var ad = @TryGetSessionField("ad");
+var dd = @TryGetSessionField("dd");
+var dd2 = @TryGetSessionField("dd2");
+var occ = @TryGetSessionField("occ");
+var tt = @TryGetSessionField("tt");
+var l2 = @TryGetSessionField("l2");
+var l = @TryGetSessionField("l");
+}
+
+<table width="100%" cellpadding="0" cellspacing="0" border="0" id="backgroundTable">
+    <tr>
+        <td valign="top" align="center" bgcolor="#12132c">
+
+            <table class="MobTable" width="650" border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                    <td style="font-size:1px; line-height:0; mso-margin-top-alt:1px;"><span class="PreHeader" style="font-size:1px; color:#12132c;">Your room is still available...</span></td>
+                </tr>
+                <tr>
+                    <td style="font-size:1px; line-height:0; mso-margin-top-alt:1px;"><img class="BlankGmail" style="width:650px; height:2px; border: 0; padding: 0; display: block; min-width:650px" src="http://images.salecycle.com/17516/2905/blank.gif" height="2" alt=""></td>
+                </tr>
+                <tr>
+                    <td align="center" valign="top">
+
+                        <table class="MobInner" width="600" border="0" cellspacing="0" cellpadding="0">
+                            <tr>
+                                <td align="left" valign="top" style="padding-bottom:20px;"></td>
+                            </tr>
+                        </table>
+                        <table class="MobTable" width="540" border="0" cellspacing="0" cellpadding="0">
+                            <tr>
+                                <td align="center" valign="middle" style="padding-top:30px;color:#ffffff;font-family:'FZ?? ????','?????', 'Microsoft JhengHei', 'FZHei-B01S', 'SimSun', Arial;font-size:10px;"><a href="[[webview]]" style="color:#ffffff;">&#35831;&#28857;&#20987;&#36825;&#37324;</a>,&#65292;&#20351;&#29992;&#27983;&#35272;&#22120;&#38405;&#35835;&#27492;&#37038;&#20214;&#12290;</td>
+                            </tr>
+                            <tr>
+                                <td align="center" valign="middle"><a href="[[link]]http://www.radissonblu.cn[sc_qm]csref=em.chap.sc[sc_amp]language=zh_CN[[/link]]"><img style="display:block;" src="http://images.salecycle.com/17925/3876/t-logo.jpg" alt="Radisson" width="154" height="98" /></a></td>
+                            </tr>
+                        </table>
+                        <table class="MobTable" style="background-color:#ffffff;" width="601" border="0" cellspacing="0" cellpadding="0">
+                            <tr>
+                                <td style="padding:15px;">
+
+                                    <table width="570" border="0" align="center" cellpadding="0" cellspacing="0" class="MobInner" style="background-color:#ffffff;">
+                                        <tr>
+                                            <td align="center" valign="top" class="Shrink"><a href="[[link]]http://www.radissonblu.cn[sc_qm]csref=em.chap.sc[sc_amp]language=zh_CN[[/link]]"><img style="display:block;" class="Vanish" src="http://images.salecycle.com/17925/3939/t-header-ZN-2.jpg" alt="YOUR ROOM IS STILL AVAILABLE" width="570" height="199" /></a></td>
+                                            <td align="center" valign="top"><a href="[[link]]http://www.radissonblu.cn[sc_qm]csref=em.chap.sc[sc_amp]language=zh_CN[[/link]]"><img style="display:block;" src="http://images.salecycle.com/17925/3939/t-header-mob-ZN-2.jpg" alt="YOUR ROOM IS STILL AVAILABLE" class="Header" width="1" height="1" /></a></td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2" align="left" valign="top" style="padding-top:20px;padding-bottom:20px;font-family:'FZ?? ????','?????', 'Microsoft JhengHei', 'FZHei-B01S', 'SimSun', Arial;font-size:14px;">
+
+                                                <strong>&#23562;&#25964;&#30340;@(salutation), </strong><br />
+                                                <br />
+                                                &#25105;&#20204;&#30041;&#24847;&#21040;&#24744;&#36817;&#26399;&#35775;&#38382;&#20029;&#31513;&#30340;&#32593;&#31449;&#65292; &#24182;&#26597;&#25214;&#25105;&#20204; @(hn)&#30340;&#23458;&#25151;&#12290;
+                                                <br />
+                                                <br />
+                                                &#33509;&#24744;&#24076;&#26395;&#32487;&#32493;&#27492;&#39044;&#35746;&#65292; &#21482;&#38656;&#36731;&#26494;&#28857;&#20987;&#8220;&#32487;&#32493;&#39044;&#35746;&#8221;&#65292; &#24744;&#20063;&#21487;&#20197;&#37325;&#26032;&#26597;&#25214;&#26032;&#37202;&#24215;&#65292;&#25105;&#20204;&#24685;&#20505;&#24744;&#30340;&#20809;&#20020;&#12290;
+                                                <br />
+                                                <br />
+                                                &#24863;&#35874;&#65281; <br /><br />
+                                                <table class="MobInner" width="100%" border="0" cellspacing="0" cellpadding="0">
+                                                    <tr>
+                                                        <td align="right" valign="middle" style="font-family:'FZ?? ????','?????', 'Microsoft JhengHei', 'FZHei-B01S', 'SimSun', Arial;font-size:14px;padding-right:20px;">
+                                                            &#20029;&#31513;&#37202;&#24215;
+                                                        </td>
+                                                    </tr>
+                                                </table>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2" align="center" valign="top"><img style="display:block;" src="http://images.salecycle.com/17925/3876/line.jpg" class="Line" alt="" width="570" height="1" /></td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2" align="center" valign="top" style="padding-top:20px;padding-bottom:20px;">
+                                                <table class="Cart" style="background-color:#818181;" width="570" border="0" cellspacing="0" cellpadding="0">
+                                                    <tr>
+                                                        <td style="padding:1px;">
+                                                            <table class="Cart" style="background-color:#ffffff;" width="568" border="0" cellspacing="0" cellpadding="0">
+                                                                <tr>
+                                                                    <td class="Shrink">
+                                                                        <table class="Hotel" width="275" border="0" align="right" cellpadding="0" cellspacing="0">
+                                                                            <tr>
+                                                                                <td width="255" align="center" valign="middle" style="padding:15px;font-size:12px;color:#4d4d4d;font-family:'FZ?? ????','?????', 'Microsoft JhengHei', 'FZHei-B01S', 'SimSun', Arial;">
+                                                                                    <table width="215" border="0" cellspacing="0" cellpadding="0">
+                                                                                        <tr>
+                                                                                            <td align="center" valign="top" style="font-size:14px;font-family:'FZ?? ????','?????', 'Microsoft JhengHei', 'FZHei-B01S', 'SimSun', Arial;font-weight:bold;color:#0c509d;">@(hn)</td>
+                                                                                        </tr>
+                                                                                        <tr>
+                                                                                            <td align="center" valign="top" style="padding-top:8px;padding-bottom:8px;font-size:10px;color:#4d4d4d;font-family:'FZ?? ????','?????', 'Microsoft JhengHei', 'FZHei-B01S', 'SimSun', Arial;"><a style="color:#4d4d4d;text-decoration:none;" href="#">@(ad)</a></td>
+                                                                                        </tr>
+                                                                                        <tr>
+                                                                                            <td align="center" valign="top" style="padding-bottom:10px;font-size:10px;color:#4d4d4d;font-family:'FZ?? ????','?????', 'Microsoft JhengHei', 'FZHei-B01S', 'SimSun', Arial;"><img style="display:block;" src="http://images.salecycle.com/17925/3876/line-sml.jpg" alt="" width="215" height="1" /></td>
+                                                                                        </tr>
+                                                                                    </table>
+                                                                                    <em><span style="color:#949494;">&#20837;&#20303;&#26085;&#26399;:</span></em>&nbsp;&nbsp;&nbsp;&nbsp;<a href="#" style="color:#949494;text-decoration:none;"> @(dd)</a><br />
+                                                                                    <em><span style="color:#949494;">&#36864;&#25151;&#26085;&#26399;:</span></em>&nbsp;&nbsp;&nbsp;&nbsp; <a href="#" style="color:#949494;text-decoration:none;">@(dd2)</a><br />
+                                                                                    <em>@(occ)</em>
+                                                                                    <br /><br />
+                                                                                    <strong>&#24635;&#35745;&#25151;&#36153; &nbsp;@(currencysymbol)@(tt)</strong>
+                                                                                </td>
+                                                                                <td width="20" rowspan="2"><img style="display:block;" src="http://images.salecycle.com/17925/3876/SPACER.gif" alt="" width="1" height="185" /></td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <td align="center" valign="middle" height="1"><img style="display:block;" src="http://images.salecycle.com/17925/3876/SPACER.gif" alt="" class="LineHold" width="1" height="1" /></td>
+                                                                            </tr>
+                                                                        </table>
+
+                                                                        <table width="275" border="0" align="left" cellpadding="0" cellspacing="0">
+                                                                            <tr>
+                                                                                <td><img style="display:block;" name="" src="@(product.ImageUrl)" width="275" height="185" alt="" /></td>
+                                                                            </tr>
+                                                                        </table>
+                                                                    </td>
+                                                                </tr>
+                                                            </table>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                                <table class="Vanish" width="570" border="0" cellspacing="0" cellpadding="0">
+                                                    <tr>
+                                                        <td width="146"><a href="[[link]]http://www.radissonblu.com/reservation/rateSearch.do[sc_qm]@(l2)[sc_amp]csref=em.chap.sc[sc_amp]language=zh_CN[[/link]]"><img src="http://images.salecycle.com/17925/3939/cta-src-ZN-2.jpg" style="display:block;" alt="SEARCH AGAIN" width="146" height="26" /></a></td>
+                                                        <td width="258">&nbsp;</td>
+                                                        <td width="166"><a href="[[link]]@(l)[sc_amp]csref=em.chap.sc[sc_amp]language=zh_CN[[/link]]"><img src="http://images.salecycle.com/17925/3939/cta-con-ZN-2.jpg" style="display:block;" alt="CONTINUE BOOKING" width="166" height="26" /></a></td>
+                                                    </tr>
+                                                </table>
+                                                <table width="280" border="0" cellspacing="0" cellpadding="0">
+                                                    <tr>
+                                                        <td><a href="[[link]]http://www.radissonblu.com/reservation/rateSearch.do[sc_qm]@(l2)[sc_amp]csref=em.chap.sc[sc_amp]language=zh_CN[[/link]]"><img class="CtaSrc" src="http://images.salecycle.com/17925/3939/cta-src-mob-ZN.jpg" style="display:block;" alt="" width="1" height="1" /></a></td>
+                                                        <td><a href="[[link]]@(l)[sc_amp]csref=em.chap.sc[sc_amp]language=zh_CN[[/link]]"><img style="display:block;" class="CtaCon" src="http://images.salecycle.com/17925/3939/cta-con-mob-ZN.jpg" alt="" width="1" height="1" /></a></td>
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2" align="center" valign="top">
+                                                <table class="Cart" style="background-color:#818181;" width="570" border="0" cellspacing="0" cellpadding="0">
+                                                    <tr>
+                                                        <td style="padding:1px;">
+                                                            <table class="Cart" style="background-color:#ffffff;" width="568" border="0" cellspacing="0" cellpadding="0">
+                                                                <tr>
+                                                                    <td style="padding:15px;padding-bottom:5px;color:#4d4d4d;font-family:'FZ?? ????','?????', 'Microsoft JhengHei', 'FZHei-B01S', 'SimSun', Arial;font-size:16px;">
+                                                                        <strong>&#23458;&#25151;&#24773;&#20917;</strong>
+                                                                        <br /> <br />
+                                                                        <table class="Cart" width="538" border="0" align="center" cellpadding="0" cellspacing="0">
+                                                                            @foreach(var product in Model.Products){
+                                                                            <tr>
+
+                                                                                @{
+                                                                                //Item Placeholder Declarations/Definitions
+
+                                                                                var ed1 = @TryGetItemField(@product, "ed1");
+                                                                                var ed2 = @TryGetItemField(@product, "ed2");
+                                                                                var ed3 = @TryGetItemField(@product, "ed3");
+                                                                                }
+
+                                                                                <td width="55" align="left" style="font-family:'FZ?? ????','?????', 'Microsoft JhengHei', 'FZHei-B01S', 'SimSun', Arial;font-size:12px;padding-bottom:10px;">@(ed1):</td>
+                                                                                <td width="100" align="left" style="font-family:'FZ?? ????','?????', 'Microsoft JhengHei', 'FZHei-B01S', 'SimSun', Arial;font-size:12px;padding-bottom:10px;">@(ed2)</td>
+                                                                                <td class="Shrink" width="160" align="left" style="font-family:'FZ?? ????','?????', 'Microsoft JhengHei', 'FZHei-B01S', 'SimSun', Arial;font-size:12px;padding-bottom:10px;"><span class="Vanish">@(ed3)</span></td>
+                                                                                <td class="Shrink" width="69" align="center" style="font-family:'FZ?? ????','?????', 'Microsoft JhengHei', 'FZHei-B01S', 'SimSun', Arial;font-size:12px;color:#818281;padding-bottom:10px;"><span class="Vanish">..................</span></td>
+                                                                                <td width="70" align="right" style="font-family:'FZ?? ????','?????', 'Microsoft JhengHei', 'FZHei-B01S', 'SimSun', Arial;font-size:12px;padding-bottom:10px;"><strong>@(currencysymbol)@(product.Price)</strong></td>
+                                                                            </tr>
+
+                                                                            }
+
+                                                                        </table>
+                                                                    </td>
+                                                                </tr>
+                                                            </table>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2" align="center" valign="top" style="padding-top:20px;padding-bottom:20px;"><img style="display:block;" src="http://images.salecycle.com/17925/3876/line.jpg" class="Line" alt="" width="570" height="1" /></td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2" align="center" valign="top">
+                                                <table class="Cart" width="571" border="0" cellspacing="0" cellpadding="0">
+                                                    <tr>
+                                                        <td width="560" class="Shrink"><a href="[[link]]http://www.radissonblu.cn/meetings/service-concepts[sc_qm]csref=em.chap.sc[sc_amp]language=zh_CN[[/link]]"><img class="Vanish" src="http://images.salecycle.com/17925/3939/f-op-CN-1-2.jpg" alt="FREE INTERNET" width="152" height="122" /><img class="Vanish" src="http://images.salecycle.com/17925/3939/f-op-CN-2-2.jpg" alt="Yes I Can!" width="137" height="122" /><img class="Vanish" src="http://images.salecycle.com/17925/3939/f-op-CN-3-2.jpg" alt="GRAB AND RUN" width="118" height="122" /><img class="Vanish" src="http://images.salecycle.com/17925/3939/f-op-CN-4-2.jpg" alt="SUPER BREAKFAST" width="162" height="122" /></a></td>
+                                                        <td width="1"><a href="[[link]]http://www.radissonblu.cn/meetings/service-concepts[sc_qm]csref=em.chap.sc[sc_amp]language=zh_CN[[/link]]"><img class="Different" style="display:block;" src="http://images.salecycle.com/17925/3939/f-op-CN-mob-2.JPG" alt="" width="1" height="1" /></a></td>
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                    </table>
+
+                                </td>
+                            </tr>
+                        </table>
+                        <table class="MobTable" style="background-color:#0c509d;" width="600" border="0" cellspacing="0" cellpadding="0">
+                            <tr>
+                                <td align="center" valign="middle" style="padding:10px;font-family:'FZ?? ????','?????', 'Microsoft JhengHei', 'FZHei-B01S', 'SimSun', Arial;font-size:10px;color:#ffffff;"><span class="Vanish"><a style="color:#ffffff;text-decoration:none;" href="[[link]]http://www.radissonblu.cn/shortbreaks[sc_qm]csref=em.chap.sc[sc_amp]language=zh_CN[[/link]]">&#29305;&#24800;&#27963;&#21160;</a> &nbsp;&nbsp;|&nbsp;&nbsp; <a style="color:#ffffff;text-decoration:none;" href="[[link]]http://www.radissonblu.cn/meetings[sc_qm]csref=em.chap.sc[sc_amp]language=zh_CN[[/link]]">&#20029;&#31513;&#20250;&#35758;</a> &nbsp;&nbsp;|&nbsp;&nbsp; </span><a style="color:#ffffff;text-decoration:none;" href="[[link]]http://www.radissonblu.cn/explore-hotels[sc_qm]csref=em.chap.sc[sc_amp]language=zh_CN[[/link]]">&#26597;&#25214;&#19982;&#39044;&#35746;</a> &nbsp;&nbsp;|&nbsp;&nbsp; <a style="color:#ffffff;text-decoration:none;" href="[[link]]http://www.radissonblu.cn/clubcarlson[sc_qm]csref=em.chap.sc[sc_amp]language=zh_CN[[/link]]">&#21345;&#23572;&#26862;&#20465;&#20048;&#37096;</a></td>
+                            </tr>
+                        </table>
+                        <table class="MobTable" width="600" border="0" cellspacing="0" cellpadding="0">
+                            <tr>
+                                <td>
+                                    <table width="200" border="0" align="left" cellpadding="0" cellspacing="0">
+                                        <tr>
+                                            <td align="left" valign="top" style="padding:15px;font-family:'FZ?? ????','?????', 'Microsoft JhengHei', 'FZHei-B01S', 'SimSun', Arial;font-size:10px;color:#ffffff;">
+                                                &#27492;&#37038;&#20214;&#21457;&#36865;&#33267;:<br />
+                                                <a href="#" style="color:#ffffff;text-decoration:none;">@(email)</a>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                    <table class="Vanish" width="350" border="0" align="right" cellpadding="0" cellspacing="0">
+                                        <tr>
+                                            <td align="right" valign="top" style="padding-top:15px;">
+                                                <table class="Vanish" width="250" border="0" align="right" cellpadding="0" cellspacing="0">
+                                                    <tr>
+                                                        <td width="84" align="center" valign="middle" style="font-family:'FZ?? ????','?????', 'Microsoft JhengHei', 'FZHei-B01S', 'SimSun', Arial;font-size:10px;color:#ffffff;"><a style="color:#ffffff;text-decoration:none;" href="[[Unsubscribe]]">&#21462;&#28040;&#35746;&#38405;</a></td>
+                                                        <td width="33" align="center" valign="middle"><img src="http://images.salecycle.com/17925/3876/f-point.jpg" alt="[[Unsubscribe]]" style="display:block;" width="17" height="17" /></td>
+                                                        <td width="79" align="center" valign="middle" style="font-family:'FZ?? ????','?????', 'Microsoft JhengHei', 'FZHei-B01S', 'SimSun', Arial;font-size:10px;color:#ffffff;"><a href="[[link]]http://www.radissonblu.cn/contact-us[[/link]]" style="color:#ffffff;text-decoration:none;">&#32852;&#31995;&#25105;&#20204;</a></td>
+                                                        <td width="35" align="center" valign="middle"><a href="[[link]]http://www.radissonblu.cn/contact-us[[/link]]"><img src="http://images.salecycle.com/17925/3876/f-point.jpg" alt="" style="display:block;" width="17" height="17" /></a></td>
+                                                        <td width="98" align="center" valign="middle" style="font-family:'FZ?? ????','?????', 'Microsoft JhengHei', 'FZHei-B01S', 'SimSun', Arial;font-size:10px;color:#ffffff;"><a href="[[link]]http://www.radissonblu.cn/privacy-policy[[/link]]" style="color:#ffffff;text-decoration:none;">&#38544;&#31169;&#25919;&#31574;</a></td>
+                                                        <td width="21" align="center" valign="middle"><a href="[[link]]http://www.radissonblu.cn/privacy-policy[[/link]]"><img src="http://images.salecycle.com/17925/3876/f-point.jpg" alt="" style="display:block;" width="17" height="17" /></a></td>
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td align="left" valign="top" style="padding:15px;padding-bottom:30px;font-family:'FZ?? ????','?????', 'Microsoft JhengHei', 'FZHei-B01S', 'SimSun', Arial;font-size:10px;color:#ffffff;">
+                                    <span style="color:#12132c;font-size:1px;" class="Footer">
+                                        <a class="FootLink" style="color:#12132c;" href="[[Unsubscribe]]">UNSUBSCRIBE</a> &nbsp;&nbsp;&nbsp;&nbsp;   <a style="color:#12132c;" href="[[link]]http://www.radissonblu.cn/contact-us[sc_qm]csref=em.chap.sc[sc_amp]language=zh_CN[[/link]]">CONTACT US</a> &nbsp;&nbsp;&nbsp;&nbsp;   <a style="color:#12132c;" href="[[link]]http://www.radissonblu.cn/privacy-policy[sc_qm]csref=em.chap.sc[sc_amp]language=zh_CN[[/link]]">PRIVACY</a>
+                                    </span><br /><br />&#169; 2014 &#21345;&#23572;&#26862;&#37202;&#24215;&#12290;&#20445;&#30041;&#25152;&#26377;&#26435;&#21033;.
+                                    <br /><br />
+                                    &#25105;&#20204;&#32852;&#31995;&#24744;&#20165;&#20026;&#25552;&#37266;&#24744;&#26410;&#23436;&#25104;&#30340;&#39044;&#35746;&#20197;&#25552;&#39640;&#24744;&#30340;&#32593;&#31449;&#29992;&#25143;&#20307;&#39564;&#12290;&#35813;&#26410;&#23436;&#25104;&#30340;&#39044;&#35746;&#39029;&#38754;&#19981;&#20250;&#20445;&#30041;&#24744;&#30340;&#32852;&#31995;&#20449;&#24687;&#12290;<br />
+                                    &#19978;&#36848;&#25152;&#21015;&#25151;&#20215;&#20026;&#22522;&#20110;&#39044;&#35746;&#26102;&#21487;&#29992;&#25151;&#38388;&#30340;&#27599;&#26202;&#26631;&#20934;&#25151;&#20215;&#12290;&#35270;&#37202;&#24215;&#21487;&#29992;&#24615;&#32780;&#23450;&#12290;
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+
