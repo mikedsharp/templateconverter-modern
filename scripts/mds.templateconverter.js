@@ -12,6 +12,8 @@ __mds.templateconverter.styleText = '';
 __mds.templateconverter.bodyText = '';
 __mds.templateconverter.sessionData = [];
 __mds.templateconverter.itemData = [];
+__mds.templateconverter.firstItemData = [];
+__mds.templateconverter.itemrepeater = null;
 
 // I've added this to my project from Stackoverflow: http://stackoverflow.com/questions/280793/case-insensitive-string-replacement-in-javascript
 // credit where credit is due. This prepares a string for a regex search when you don't want the regex engine to recognise any of the regex characters
@@ -39,26 +41,41 @@ __mds.templateconverter.converttemplate = function (str) {
     __mds.templateconverter.bodyText = ';'
     __mds.templateconverter.sessionData = [];
     __mds.templateconverter.itemData = [];
+    __mds.templateconverter.firstItemData = [];
+    __mds.templateconverter.itemrepeater = null;
+    __mds.templateconverter.outerrepeater = null;
+    document.getElementById('bodyArea').value = '';
 
     // carry out various transformations on old template string and return new V2 Style Razor template.
     // extract style and body from raw document 
     __mds.templateconverter.splitbodystyle(str);
-    __mds.templateconverter.convertplaceholders();
+
+    __mds.templateconverter.extractrepeater();
     __mds.templateconverter.upgradelinks();
+
+    if (__mds.templateconverter.itemrepeater != null) {
+        __mds.templateconverter.convertplaceholders('first');
+
+    }
+    __mds.templateconverter.convertplaceholders('item');
+
+
+
+
     // build up our list of item fields
     __mds.templateconverter.replaceitemrepeater();
-    __mds.templateconverter.applysessiondata();
+
 
 
     // add extra @ to @media in body 
     __mds.templateconverter.bodyText = __mds.templateconverter.bodyText.split('@media').join('@@media');
-
+    __mds.templateconverter.applysessiondata();
 
     // finalize changes 
 
-   // if (document.getElementById('radioEscapeAtYes').checked) {
-        __mds.templateconverter.styleText = '<head>\n<style type="text/css">\n' + __mds.templateconverter.styleText.split('@').join('@@') + '\n</style>\n</head>';
-   // }
+    // if (document.getElementById('radioEscapeAtYes').checked) {
+    __mds.templateconverter.styleText = '<head>\n<style type="text/css">\n' + __mds.templateconverter.styleText.split('@').join('@@') + '\n</style>\n</head>';
+    // }
 
     //if (document.getElementById('encodeBodyYes').checked) {
     //  //  document.getElementById('bodyArea').value = encodeURIComponent(__mds.templateconverter.bodyText);
@@ -73,13 +90,48 @@ __mds.templateconverter.converttemplate = function (str) {
     //else {
     //  //  document.getElementById('styleArea').value = __mds.templateconverter.styleText;
     //}
-        __mds.templateconverter.bodyText = '<!DOCTYPE html>\n<html>\n'
-        + "\n@* Required Dependencies *@ @using System.Globalization; @* Helpers *@ @helper RenderCurrencySymbol() { /* Reference the .NET Currency symbol libraries to obtain correct currency code*/ string symbol = string.Empty; CultureInfo[] cultures = CultureInfo.GetCultures(CultureTypes.SpecificCultures); foreach (CultureInfo ci in cultures) { RegionInfo ri = new RegionInfo(ci.LCID); if (ri.ISOCurrencySymbol == Model.CurrencyCode) { symbol = ri.CurrencySymbol; break; } } /*render the symbol*/ <span>@(symbol)</span> }\n"
-        + __mds.templateconverter.styleText + '\n<body>\n'
-        +__mds.templateconverter.bodyText + '\n</body>\n</html>';
+    var tempBody = __mds.templateconverter.bodyText;
+
+    __mds.templateconverter.bodyText = '<!DOCTYPE html>\n<html>\n';
+    __mds.templateconverter.bodyText += "\n@* Required Dependencies *@ @using System.Globalization; @* Helpers *@ @helper RenderCurrencySymbol() { /* Reference the .NET Currency symbol libraries to obtain correct currency code*/ string symbol = string.Empty; CultureInfo[] cultures = CultureInfo.GetCultures(CultureTypes.SpecificCultures); foreach (CultureInfo ci in cultures) { RegionInfo ri = new RegionInfo(ci.LCID); if (ri.ISOCurrencySymbol == Model.CurrencyCode) { symbol = ri.CurrencySymbol; break; } } /*render the symbol*/ <span>@(symbol)</span> }\n";
+
+    __mds.templateconverter.bodyText += '@{\n';
+    __mds.templateconverter.bodyText += '\nvar firstProduct = Model.Products.FirstOrDefault();\n\n';
+
+    for (var i = 0; i < __mds.templateconverter.firstItemData.length; i++) {
+        __mds.templateconverter.bodyText += __mds.templateconverter.firstItemData[i] + '\n';
+    }
+    __mds.templateconverter.bodyText += '\n}\n';
+
+
+    __mds.templateconverter.bodyText += __mds.templateconverter.styleText + '\n@if(firstProduct != null){\n<body>\n';
+    __mds.templateconverter.bodyText += tempBody;
+    __mds.templateconverter.bodyText += __mds.templateconverter.bodyText + '\n</body>\n}\n</html>';
 
     document.getElementById('bodyArea').value = __mds.templateconverter.bodyText;
     //document.getElementById('styleArea').value = __mds.templateconverter.styleText;
+
+
+
+}
+
+__mds.templateconverter.extractrepeater = function () {
+
+    if (__mds.templateconverter.bodyText.match(/(<!--){0,1}\[\[productlist:end\]\](-->){0,1}/gi) != null) {
+
+        var end = __mds.templateconverter.bodyText.indexOf(__mds.templateconverter.bodyText.match(/(<!--){0,1}\[\[productlist:end\]\](-->){0,1}/gi)[0]);
+        var start = __mds.templateconverter.bodyText.indexOf(__mds.templateconverter.bodyText.match(/(<!--){0,1}\[\[productlist:start\]\](-->){0,1}/gi)[0]);
+        var repeaterHTML = __mds.templateconverter.bodyText.substring(__mds.templateconverter.bodyText.indexOf(__mds.templateconverter.bodyText.match(/(<!--){0,1}\[\[productlist:start\]\](-->){0,1}/gi)[0]) + __mds.templateconverter.bodyText.match(/(<!--){0,1}\[\[productlist:start\]\](-->){0,1}/gi)[0].length, end);
+        var outerRepeaterHTML = __mds.templateconverter.bodyText.replace(repeaterHTML, "@(RepeaterHTML)").replace(__mds.templateconverter.bodyText.match(/(<!--){0,1}\[\[productlist:end\]\](-->){0,1}/gi)[0], "").replace(__mds.templateconverter.bodyText.match(/(<!--){0,1}\[\[productlist:start\]\](-->){0,1}/gi)[0], "");
+        __mds.templateconverter.itemrepeater = repeaterHTML;
+        __mds.templateconverter.outerrepeater = outerRepeaterHTML;
+
+    }
+    else {
+        __mds.templateconverter.itemrepeater = null;
+        __mds.templateconverter.outerrepeater = __mds.templateconverter.bodyText;
+    }
+
 
 
 
@@ -89,7 +141,7 @@ __mds.templateconverter.applysessiondata = function () {
 
     //define a session data section
     sessionDataSection = '@{ ';
-    sessionDataSection += '\nvar firstProduct = Model.Products.FirstOrDefault();'; 
+    // sessionDataSection += '\nvar firstProduct = Model.Products.FirstOrDefault();';
     for (var i = 0; i < __mds.templateconverter.sessionData.length; i++) {
         sessionDataSection += '\n' + __mds.templateconverter.sessionData[i];
     }
@@ -109,7 +161,7 @@ __mds.templateconverter.splitbodystyle = function (html) {
 
 }
 
-__mds.templateconverter.convertplaceholders = function () {
+__mds.templateconverter.convertplaceholders = function (prefix) {
     // regex gets all old style placeholders  (without the colon)
     //var placeholders = __mds.templateconverter.bodyText.match(/\[\[[^\^:[]+\]\]/g);
 
@@ -155,11 +207,13 @@ __mds.templateconverter.convertplaceholders = function () {
 
                             var reg = new RegExp("(" + preg_quote(placeholders[i]) + ")", 'gi');
 
+
+
                             if (obj[overrideType + '_razor'] != null && typeof obj[overrideType + '_razor'] != undefined && obj[overrideType + '_razor'] != '') {
-                                __mds.templateconverter.bodyText = __mds.templateconverter.bodyText.replace(reg, prepend + '@(' + obj[overrideType + '_razor'] + ')' + append);
+                                __mds.templateconverter.bodyText = __mds.templateconverter.bodyText.replace(reg, prepend + '@(' + obj[overrideType + '_razor'] + ')' + append).replace(/item_/gi, prefix + '_');
                             }
                             else {
-                                __mds.templateconverter.bodyText = __mds.templateconverter.bodyText.replace(reg, prepend + append);
+                                __mds.templateconverter.bodyText = __mds.templateconverter.bodyText.replace(reg, prepend + append).replace(/item_/gi, prefix + '_');
 
                             }
 
@@ -170,7 +224,13 @@ __mds.templateconverter.convertplaceholders = function () {
                                     __mds.templateconverter.sessionData.push(obj[overrideType]);
                                 }
                                 else if (obj.scope == 'item') {
-                                    __mds.templateconverter.itemData.push(obj[overrideType]);
+                                    if (prefix == 'first') {
+                                        __mds.templateconverter.firstItemData.push(obj[overrideType]);
+                                    }
+                                    else {
+                                        __mds.templateconverter.itemData.push(obj[overrideType]);
+                                    }
+
                                 }
                             }
                             break;
@@ -178,7 +238,7 @@ __mds.templateconverter.convertplaceholders = function () {
                         else {
                             var reg = new RegExp("(" + preg_quote(placeholders[i]) + ")", 'gi');
 
-                            __mds.templateconverter.bodyText = __mds.templateconverter.bodyText.replace(reg, prepend + '@(' + obj.razor + ')' + append);
+                            __mds.templateconverter.bodyText = __mds.templateconverter.bodyText.replace(reg, prepend + '@(' + (obj.razor.indexOf('item_') > -1 ? obj.razor.replace('item_', 'first_') : obj.razor) + ')' + append);
                             if (typeof obj.code != "undefined" && obj.code != null) {
 
                                 // add a declaration in the session or item data sections (in C#) 
@@ -186,7 +246,14 @@ __mds.templateconverter.convertplaceholders = function () {
                                     __mds.templateconverter.sessionData.push(obj.code);
                                 }
                                 else if (obj.scope == 'item') {
-                                    __mds.templateconverter.itemData.push(obj.code);
+                                    if (prefix == 'first') {
+                                        __mds.templateconverter.firstItemData.push(obj.code);
+                                    }
+                                    else {
+                                        __mds.templateconverter.itemData.push(obj.code);
+                                    }
+
+
                                 }
                             }
                             break;
@@ -229,9 +296,17 @@ __mds.templateconverter.convertplaceholders = function () {
                     itemVar[0] = itemVar[0].toLowerCase();
                 }
 
-                // paste new style razor placeholder into markup (global replace)
-                __mds.templateconverter.bodyText = __mds.templateconverter.bodyText.split(customPlaceholders[i]).join('@(' + 'item_' + itemVar[0] + ')');
-                __mds.templateconverter.itemData.push('var ' + 'item_' + itemVar[0] + ' = ' + '@TryGetItemField(@product, \"' + itemVar[0] + '\");');
+                if (prefix == 'first') {
+                    // paste new style razor placeholder into markup (global replace)
+                    __mds.templateconverter.bodyText = __mds.templateconverter.bodyText.split(customPlaceholders[i]).join('@(' + 'first_' + itemVar[0] + ')');
+                    __mds.templateconverter.firstItemData.push('var ' + 'first_' + itemVar[0] + ' = ' + '@TryGetItemField(@firstProduct, \"' + itemVar[0] + '\");');
+                }
+                else {
+                    // paste new style razor placeholder into markup (global replace)
+                    __mds.templateconverter.bodyText = __mds.templateconverter.bodyText.split(customPlaceholders[i]).join('@(' + 'item_' + itemVar[0] + ')');
+                    __mds.templateconverter.itemData.push('var ' + 'item_' + itemVar[0] + ' = ' + '@TryGetItemField(@product, \"' + itemVar[0] + '\");');
+                }
+
             }
             else if (customPlaceholders[i].toLowerCase().indexOf('session:') > -1) {
                 __mds.templateconverter.bodyText = __mds.templateconverter.bodyText.split(customPlaceholders[i]).join('@(' + 'session_' + itemVar[0] + ')');
@@ -265,35 +340,41 @@ __mds.templateconverter.replaceitemrepeater = function () {
     var productListEnd = __mds.templateconverter.bodyText.match(/(<!--){0,1}\[\[productlist:end\]\](-->){0,1}/gi);
     var itemDataString = '';
 
-    if (productListStart != null && productListStart.length > 0 && productListEnd != null && productListEnd.length > 0) {
-        itemDataString = '\n@{ ';
+    //if (productListStart != null && productListStart.length > 0 && productListEnd != null && productListEnd.length > 0) {
+    itemDataString = '\n@{ ';
 
-        for (var i = 0; i < __mds.templateconverter.itemData.length; i++) {
-            itemDataString += '\n' + __mds.templateconverter.itemData[i];
-        }
-
-        itemDataString += '\n}';
-
-        // add new foreach loop around area where product list tags were 
-        productListStart.map(function (start) {
-            __mds.templateconverter.bodyText = __mds.templateconverter.bodyText.split(start).join('@foreach(var product in Model.Products){');
-        });
-
-        productListEnd.map(function (end) {
-            __mds.templateconverter.bodyText = __mds.templateconverter.bodyText.split(end).join('}');
-        });
-
-        __mds.templateconverter.bodyText = __mds.templateconverter.bodyText.replace('<!--@foreach(var product in Model.Products){-->', '@foreach(var product in Model.Products){')
-        __mds.templateconverter.bodyText = __mds.templateconverter.bodyText.replace(__mds.templateconverter.bodyText.match(/\@foreach\(var product in Model\.Products[^>]+>/)[0], __mds.templateconverter.bodyText.match(/\@foreach\(var product in Model\.Products[^>]+>/)[0] + ' ' + itemDataString);
+    for (var i = 0; i < __mds.templateconverter.itemData.length; i++) {
+        itemDataString += '\n' + __mds.templateconverter.itemData[i];
     }
-    else {
-        console.log('ERROR: This page contains no productlist start/end tags or there is a tag mismatch.');
+
+    itemDataString += '\n}';
+
+    __mds.templateconverter.bodyText = __mds.templateconverter.outerrepeater;
+
+    if (__mds.templateconverter.itemrepeater != null) {
+        __mds.templateconverter.bodyText = __mds.templateconverter.bodyText.replace('@(RepeaterHTML)', "@foreach(var product in Model.Products){\n" + itemDataString + '\n' + '@(RepeaterHTML)' + '\n}');
+        __mds.templateconverter.bodyText = __mds.templateconverter.bodyText.replace('@(RepeaterHTML)', __mds.templateconverter.itemrepeater);
     }
+    //// add new foreach loop around area where product list tags were 
+    //productListStart.map(function (start) {
+    //    __mds.templateconverter.bodyText = __mds.templateconverter.bodyText.split(start).join('@foreach(var product in Model.Products){');
+    //});
+
+    //productListEnd.map(function (end) {
+    //    __mds.templateconverter.bodyText = __mds.templateconverter.bodyText.split(end).join('}');
+    //});
+
+    //  __mds.templateconverter.bodyText = __mds.templateconverter.bodyText.replace('<!--@foreach(var product in Model.Products){-->', '@foreach(var product in Model.Products){')
+    //  __mds.templateconverter.bodyText = __mds.templateconverter.bodyText.replace(__mds.templateconverter.bodyText.match(/\@foreach\(var product in Model\.Products[^>]+>/)[0], __mds.templateconverter.bodyText.match(/\@foreach\(var product in Model\.Products[^>]+>/)[0] + ' ' + itemDataString);
+    // }
+    //else {
+    //    console.log('ERROR: This page contains no productlist start/end tags or there is a tag mismatch.');
+    //}
 }
 
 __mds.templateconverter.upgradelinks = function () {
     // match all links, it is assumed that a link will always close with a closing speech mark with the old style 
-    var links = __mds.templateconverter.bodyText.match(/\[\[[Ll]ink\]\][0-9]+\|[^"]+/g);
+    var links = __mds.templateconverter.outerrepeater.match(/\[\[[Ll]ink\]\][0-9]+\|[^"]+/g);
 
     if (links != null && links.length > 0) {
 
@@ -301,8 +382,23 @@ __mds.templateconverter.upgradelinks = function () {
             // remove the old start tag and replace with new starting and closing tags
             var replaceWith = el.replace(/\[\[[Ll]ink\]\][0-9]+\|/, '[[link]]');
             replaceWith += '[[/link]]';
-            __mds.templateconverter.bodyText = __mds.templateconverter.bodyText.replace(el, replaceWith);
+            __mds.templateconverter.outerrepeater = __mds.templateconverter.outerrepeater.replace(el, replaceWith);
         });
+    }
+
+    if (__mds.templateconverter.itemrepeater != null) {
+        // match all links, it is assumed that a link will always close with a closing speech mark with the old style 
+        links = __mds.templateconverter.itemrepeater.match(/\[\[[Ll]ink\]\][0-9]+\|[^"]+/g);
+
+        if (links != null && links.length > 0) {
+
+            links.map(function (el) {
+                // remove the old start tag and replace with new starting and closing tags
+                var replaceWith = el.replace(/\[\[[Ll]ink\]\][0-9]+\|/, '[[link]]');
+                replaceWith += '[[/link]]';
+                __mds.templateconverter.itemrepeater = __mds.templateconverter.itemrepeater.replace(el, replaceWith);
+            });
+        }
     }
 }
 
@@ -336,11 +432,11 @@ __mds.templateconverter.compileSalutation = function () {
     else {
         var razorLadder = '';
 
-        var salutationRules = []; 
+        var salutationRules = [];
 
         $.each($('#salutationList').children(), function (ix) {
             var salutationString = '';
-            var conditions = []; 
+            var conditions = [];
             salutationString = $(this).find('.salutationArea:first').val();
             conditions = salutationString.match(/(@Model.Customer){1}([^\s-])+/gi);
 
@@ -348,12 +444,12 @@ __mds.templateconverter.compileSalutation = function () {
 
             console.log('**** START OF CONDITION ' + ix + ' *****');
             for (var i = 0; i < conditions.length; i++) {
-                salutationString += (' ' + conditions[i] + ' != null ' + '&& string.Format({0}, ' + conditions[i] +') != "" '  +  ((i < conditions.length-1) ? '&&' : '' )); 
+                salutationString += (' ' + conditions[i] + ' != null ' + '&& string.Format({0}, ' + conditions[i] + ') != "" ' + ((i < conditions.length - 1) ? '&&' : ''));
             }
             salutationString += ')';
 
             if (ix != 0) {
-                salutationString = 'else ' + salutationString; 
+                salutationString = 'else ' + salutationString;
             }
 
             console.log(salutationString);
@@ -379,7 +475,7 @@ document.addEventListener('DOMContentLoaded', function () {
     $("#radioEncodeBody").buttonset();
     $('#radioEscapeAt').buttonset();
     $('#radioDowncasePlaceholders').buttonset();
-  //  $('#radioOverrideCurrency').buttonset();
+    //  $('#radioOverrideCurrency').buttonset();
     $('#radioUseCustomSalutation').buttonset();
     $("input[type=submit], a, button")
      .button();
