@@ -120,7 +120,7 @@ __mds.templateconverter.extractmarkup = function (html) {
         end = bodyText.indexOf(bodyText.match(/(<!--){0,1}\[\[productlist:end\]\](-->){0,1}/gi)[0]);
         startLength = bodyText.match(/(<!--){0,1}\[\[productlist:start\]\](-->){0,1}/gi)[0].length;
         endLength = bodyText.match(/(<!--){0,1}\[\[productlist:end\]\](-->){0,1}/gi)[0].length;
-        __mds.templateconverter.markup.outerRepeaterMarkup = bodyText.replace(bodyText.substring(start - startLength, end + endLength), '\n@(ItemRepeater)\n');
+        __mds.templateconverter.markup.outerRepeaterMarkup = bodyText.replace(bodyText.substring(start, end + endLength), '\n@(ItemRepeater)\n');
         __mds.templateconverter.markup.repeaterMarkup = bodyText.substring(start + startLength, end);
 
     }
