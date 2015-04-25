@@ -1,0 +1,117 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>V1 to V2 Template Converter</title>
+
+    <link href="~/Content/jquery-ui-1.10.4.custom.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-1.10.2.js"></script>
+    <script src="~/Scripts/jquery-ui-1.10.3.js"></script>
+    <script src="~/Scripts/mds.templateconverter.js"></script>
+
+    <style>
+        .centre {
+            margin: 0 auto;
+            display: block;
+        }
+
+        .clear {
+            clear: both;
+            float: left;
+        }
+
+        #toolbar {
+            padding: 4px;
+            display: inline-block;
+        }
+
+        body {
+            background-color: #111111;
+        }
+
+        textarea {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            bottom: 0;
+        }
+
+        .dip {
+            height: 100%;
+        }
+
+        #tabs {
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            top: 0;
+        }
+
+        #toolbar {
+            width: 100%;
+        }
+
+        #convert {
+            cursor: pointer;
+        }
+
+        div.tabcontent {
+            height: 100%;
+        }
+
+        .green {
+            background-color: #070;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="tabs">
+        <ul>
+            <li><a href="#tabs-1">Raw HTML</a></li>
+            <li><a href="#tabs-2">Converted Template (Body + Style)</a></li>
+        </ul>
+
+        <div id="tabs-1" class="tabcontent">
+
+            <div id="accordion">
+                <h3>Converter Config</h3>
+                <div style="overflow:auto !important;">
+
+                    <h4>Downcase Fields? (You may want to do this when the v1 template uses capitals in item and session placeholders)</h4>
+                    <div id="radioDowncasePlaceholders">
+                        <input type="radio" id="downcasePlaceholdersYes" name="radioDowncasePlaceholders" /><label for="downcasePlaceholdersYes">Yes</label>
+                        <input type="radio" id="downcasePlaceholdersNo" name="radioDowncasePlaceholders" checked="checked" /><label for="downcasePlaceholdersNo">No</label>
+                    </div>
+
+
+                    <h4>Image Replace URL (From V1 Portal)</h4>
+                    <div style="display:inline-block;clear:both;margin-bottom:10px;">
+                        <input type="text" id="imageReplaceUrl" />
+                    </div>
+
+                </div>
+                <h2>
+                    Add V1 Template
+                </h2>
+
+            </div>
+            <div id="toolbar" class="ui-widget-header ui-corner-all">
+                <button id="convert">Convert</button>
+            </div>
+            <h4>Add your V1-Style Email template here</h4>
+            <textarea id="templateArea"></textarea>
+
+        </div>
+
+        <div id="tabs-2" class="dip">
+
+            <h3>Body (Converted, removed from HTML)</h3>
+            <textarea id="bodyArea"></textarea>
+
+        </div>
+
+    </div>
+
+</body>
+</html>

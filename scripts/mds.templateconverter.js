@@ -8,12 +8,23 @@
 
 __mds = (typeof __mds == "undefined") ? {} : __mds;
 __mds.templateconverter = __mds.templateconverter || {};
-__mds.templateconverter.styleText = '';
+
+__mds.templateconverter.markup = {
+    "style": {},
+    "repeaterMarkup": {},
+    "outerRepeaterMarkup": {}
+};
+
+__mds.templateconverter.placeholderData = {
+    "sessionData": [],
+    "innerRepeaterItemData": [],
+    "outerRepeaterItemData": []
+};
+
+__mds.templateconverter.boilerplateTemplate = '';
+
 __mds.templateconverter.bodyText = '';
-__mds.templateconverter.sessionData = [];
-__mds.templateconverter.itemData = [];
-__mds.templateconverter.firstItemData = [];
-__mds.templateconverter.itemrepeater = null;
+
 
 // I've added this to my project from Stackoverflow: http://stackoverflow.com/questions/280793/case-insensitive-string-replacement-in-javascript
 // credit where credit is due. This prepares a string for a regex search when you don't want the regex engine to recognise any of the regex characters
@@ -37,118 +48,90 @@ __mds.templateconverter.converttemplate = function (str) {
     var body, style;
     var sessionDataSection = '';
 
-    __mds.templateconverter.styleText = '';
+    __mds.templateconverter.markup = {
+        "style": {},
+        "repeaterMarkup": {},
+        "outerRepeaterMarkup": {}
+    };
+
+    __mds.templateconverter.placeholderData = {
+        "sessionData": [],
+        "innerRepeaterItemData": [],
+        "outerRepeaterItemData": []
+    };
+
     __mds.templateconverter.bodyText = ';'
-    __mds.templateconverter.sessionData = [];
-    __mds.templateconverter.itemData = [];
-    __mds.templateconverter.firstItemData = [];
-    __mds.templateconverter.itemrepeater = null;
-    __mds.templateconverter.outerrepeater = null;
-    document.getElementById('bodyArea').value = '';
 
-    // carry out various transformations on old template string and return new V2 Style Razor template.
-    // extract style and body from raw document 
-    __mds.templateconverter.splitbodystyle(str);
+    __mds.templateconverter.extractmarkup(document.getElementById('templateArea').value);
+    __mds.templateconverter.extractstyle(document.getElementById('templateArea').value);
 
-    __mds.templateconverter.extractrepeater();
-    __mds.templateconverter.upgradelinks();
+    __mds.templateconverter.markup.outerRepeaterMarkup = __mds.templateconverter.convertplaceholders('firstProduct', __mds.templateconverter.markup.outerRepeaterMarkup);
 
-    if (__mds.templateconverter.itemrepeater != null) {
-        __mds.templateconverter.convertplaceholders('first');
+    if (__mds.templateconverter.markup.repeaterMarkup != null) {
+        __mds.templateconverter.markup.repeaterMarkup = __mds.templateconverter.convertplaceholders('product', __mds.templateconverter.markup.repeaterMarkup);
 
     }
-    __mds.templateconverter.convertplaceholders('item');
+    __mds.templateconverter.bodyText = __mds.templateconverter.boilerplateTemplate;
+    __mds.templateconverter.bodyText = __mds.templateconverter.bodyText.split('@(templateBody)').join(__mds.templateconverter.markup.outerRepeaterMarkup);
+    if (__mds.templateconverter.markup.repeaterMarkup != null) {
+        __mds.templateconverter.bodyText = __mds.templateconverter.bodyText.split('@(ItemRepeater)').join('@foreach(var product in Model.Products)\n{\n<div>@(itemRepeaterData)\n' + __mds.templateconverter.markup.repeaterMarkup + '</div>\n}\n');
 
-
-
-
-    // build up our list of item fields
-    __mds.templateconverter.replaceitemrepeater();
-
-
-
-    // add extra @ to @media in body 
-    __mds.templateconverter.bodyText = __mds.templateconverter.bodyText.split('@media').join('@@media');
+    }
     __mds.templateconverter.applysessiondata();
-
-    // finalize changes 
-
-    // if (document.getElementById('radioEscapeAtYes').checked) {
-    __mds.templateconverter.styleText = '<head>\n<style type="text/css">\n' + __mds.templateconverter.styleText.split('@').join('@@') + '\n</style>\n</head>';
-    // }
-
-    //if (document.getElementById('encodeBodyYes').checked) {
-    //  //  document.getElementById('bodyArea').value = encodeURIComponent(__mds.templateconverter.bodyText);
-    //}
-    //else {
-    //  //  document.getElementById('bodyArea').value = __mds.templateconverter.bodyText;
-    //}
-
-    //if (document.getElementById('encodeStyleYes').checked) {
-    //   // document.getElementById('styleArea').value = encodeURIComponent(__mds.templateconverter.styleText);
-    //}
-    //else {
-    //  //  document.getElementById('styleArea').value = __mds.templateconverter.styleText;
-    //}
-    var tempBody = __mds.templateconverter.bodyText;
-
-    __mds.templateconverter.bodyText = '<!DOCTYPE html>\n<html>\n';
-    __mds.templateconverter.bodyText += "\n@* Required Dependencies *@ @using System.Globalization; @* Helpers *@ @helper RenderCurrencySymbol() { /* Reference the .NET Currency symbol libraries to obtain correct currency code*/ string symbol = string.Empty; CultureInfo[] cultures = CultureInfo.GetCultures(CultureTypes.SpecificCultures); foreach (CultureInfo ci in cultures) { RegionInfo ri = new RegionInfo(ci.LCID); if (ri.ISOCurrencySymbol == Model.CurrencyCode) { symbol = ri.CurrencySymbol; break; } } /*render the symbol*/ <span>@(symbol)</span> }\n";
-
-    __mds.templateconverter.bodyText += '@{\n';
-    __mds.templateconverter.bodyText += '\nvar firstProduct = Model.Products.FirstOrDefault();\n\n';
-
-    for (var i = 0; i < __mds.templateconverter.firstItemData.length; i++) {
-        __mds.templateconverter.bodyText += __mds.templateconverter.firstItemData[i] + '\n';
-    }
-    __mds.templateconverter.bodyText += '\n}\n';
-
-
-    __mds.templateconverter.bodyText += __mds.templateconverter.styleText + '\n@if(firstProduct != null){\n<body>\n';
-    __mds.templateconverter.bodyText += tempBody;
-    __mds.templateconverter.bodyText += __mds.templateconverter.bodyText + '\n</body>\n}\n</html>';
+    __mds.templateconverter.replaceitemrepeater();
+    __mds.templateconverter.upgradelinks();
+    __mds.templateconverter.bodyText = __mds.templateconverter.bodyText.split('@media').join('@@media');
+    __mds.templateconverter.markup.style = __mds.templateconverter.markup.style.split('@media').join('@@media');
+    __mds.templateconverter.bodyText = __mds.templateconverter.bodyText.split("@(templateStyle)").join(__mds.templateconverter.markup.style);
 
     document.getElementById('bodyArea').value = __mds.templateconverter.bodyText;
-    //document.getElementById('styleArea').value = __mds.templateconverter.styleText;
-
-
-
-}
-
-__mds.templateconverter.extractrepeater = function () {
-
-    if (__mds.templateconverter.bodyText.match(/(<!--){0,1}\[\[productlist:end\]\](-->){0,1}/gi) != null) {
-
-        var end = __mds.templateconverter.bodyText.indexOf(__mds.templateconverter.bodyText.match(/(<!--){0,1}\[\[productlist:end\]\](-->){0,1}/gi)[0]);
-        var start = __mds.templateconverter.bodyText.indexOf(__mds.templateconverter.bodyText.match(/(<!--){0,1}\[\[productlist:start\]\](-->){0,1}/gi)[0]);
-        var repeaterHTML = __mds.templateconverter.bodyText.substring(__mds.templateconverter.bodyText.indexOf(__mds.templateconverter.bodyText.match(/(<!--){0,1}\[\[productlist:start\]\](-->){0,1}/gi)[0]) + __mds.templateconverter.bodyText.match(/(<!--){0,1}\[\[productlist:start\]\](-->){0,1}/gi)[0].length, end);
-        var outerRepeaterHTML = __mds.templateconverter.bodyText.replace(repeaterHTML, "@(RepeaterHTML)").replace(__mds.templateconverter.bodyText.match(/(<!--){0,1}\[\[productlist:end\]\](-->){0,1}/gi)[0], "").replace(__mds.templateconverter.bodyText.match(/(<!--){0,1}\[\[productlist:start\]\](-->){0,1}/gi)[0], "");
-        __mds.templateconverter.itemrepeater = repeaterHTML;
-        __mds.templateconverter.outerrepeater = outerRepeaterHTML;
-
-    }
-    else {
-        __mds.templateconverter.itemrepeater = null;
-        __mds.templateconverter.outerrepeater = __mds.templateconverter.bodyText;
-    }
-
-
-
-
 }
 
 __mds.templateconverter.applysessiondata = function () {
 
     //define a session data section
-    sessionDataSection = '@{ ';
-    // sessionDataSection += '\nvar firstProduct = Model.Products.FirstOrDefault();';
-    for (var i = 0; i < __mds.templateconverter.sessionData.length; i++) {
-        sessionDataSection += '\n' + __mds.templateconverter.sessionData[i];
+    sessionDataSection = '';
+    for (var i = 0; i < __mds.templateconverter.placeholderData['sessionData'].length; i++) {
+        sessionDataSection += '\n' + __mds.templateconverter.placeholderData['sessionData'][i];
     }
-    sessionDataSection += ' }';
-    //append the various data sections to main body of document 
-    __mds.templateconverter.bodyText = sessionDataSection + ' ' + __mds.templateconverter.bodyText;
+
+    for (var i = 0; i < __mds.templateconverter.placeholderData['outerRepeaterItemData'].length; i++) {
+        sessionDataSection += '\n' + __mds.templateconverter.placeholderData['outerRepeaterItemData'][i];
+    }
+
+    __mds.templateconverter.bodyText = __mds.templateconverter.bodyText.split('@(sessionFields)').join(sessionDataSection);
 }
+
+__mds.templateconverter.extractstyle = function (html) {
+    // Some assumptions made here, the first style tag is start of CSS, file may contain additional closing style tags, so I'm taking last closing style tag of 'head' as my end point
+    __mds.templateconverter.markup.style = html.substring(html.indexOf('<style'), html.lastIndexOf('</head>'));
+    __mds.templateconverter.markup.style = __mds.templateconverter.markup.style.substring(__mds.templateconverter.markup.style.indexOf('>') + 1, __mds.templateconverter.markup.style.lastIndexOf('</style>'));
+}
+
+__mds.templateconverter.extractmarkup = function (html) {
+
+    var start, end, startLength, endLength;
+    var bodyText = html.substring(html.indexOf('<body'));
+    bodyText = bodyText.substring(bodyText.indexOf('>') + 1, bodyText.lastIndexOf('</body>'));
+
+    //repeaters 
+    if (bodyText.match(/(<!--){0,1}\[\[productlist:start\]\](-->){0,1}/gi) != null && bodyText.match(/(<!--){0,1}\[\[productlist:end\]\](-->){0,1}/gi) != null) {
+        start = bodyText.indexOf(bodyText.match(/(<!--){0,1}\[\[productlist:start\]\](-->){0,1}/gi)[0]);
+        end = bodyText.indexOf(bodyText.match(/(<!--){0,1}\[\[productlist:end\]\](-->){0,1}/gi)[0]);
+        startLength = bodyText.match(/(<!--){0,1}\[\[productlist:start\]\](-->){0,1}/gi)[0].length;
+        endLength = bodyText.match(/(<!--){0,1}\[\[productlist:end\]\](-->){0,1}/gi)[0].length;
+        __mds.templateconverter.markup.outerRepeaterMarkup = bodyText.replace(bodyText.substring(start - startLength, end + endLength), '\n@(ItemRepeater)\n');
+        __mds.templateconverter.markup.repeaterMarkup = bodyText.substring(start + startLength, end);
+
+    }
+    else {
+        __mds.templateconverter.markup.outerRepeaterMarkup = bodyText;
+        __mds.templateconverter.markup.repeaterMarkup = null;
+
+    }
+
+}
+
 __mds.templateconverter.splitbodystyle = function (html) {
 
     // Some assumptions made here, the first style tag is start of CSS, file may contain additional closing style tags, so I'm taking last closing style tag of 'head' as my end point
@@ -161,11 +144,11 @@ __mds.templateconverter.splitbodystyle = function (html) {
 
 }
 
-__mds.templateconverter.convertplaceholders = function (prefix) {
+__mds.templateconverter.convertplaceholders = function (prefix, markup) {
     // regex gets all old style placeholders  (without the colon)
     //var placeholders = __mds.templateconverter.bodyText.match(/\[\[[^\^:[]+\]\]/g);
 
-    var placeholders = __mds.templateconverter.bodyText.match(/(\[){2}([^\[:\]])+(\]){2}/gi);
+    var placeholders = markup.match(/(\[){2}([^\[:\]])+(\]){2}/gi);
 
     if (placeholders != null && placeholders.length > 0) {
         // remove duplicates (case sensitive)
@@ -177,10 +160,6 @@ __mds.templateconverter.convertplaceholders = function (prefix) {
         __mds.templateconverter.schema.placeholders.map(function (obj) {
             for (var i = 0; i < placeholders.length; i++) {
                 // check each placeholder in a non-case sensitive manner 
-                //if (placeholders[i].toLowerCase() == '[[customername]]' && obj.name.toLowerCase() == '[[customername]]' && document.getElementById('useCustomSalutationYes').checked) {
-                //    __mds.templateconverter.compileSalutation();
-                //}
-                //else 
                 if (obj.name.toLowerCase() == placeholders[i].toLowerCase()) {
 
                     if (typeof obj.legacy == "undefined" || obj.legacy == null) {
@@ -196,75 +175,33 @@ __mds.templateconverter.convertplaceholders = function (prefix) {
                             append = eval('document.getElementById(\"' + obj.append.id + '\").' + obj.append.value);
                         }
 
-                        var overrideType = null;
+
+                        var reg = new RegExp("(" + preg_quote(placeholders[i]) + ")", 'gi');
 
 
-                        overrideType = __mds.templateconverter.hasoverride(obj.name.toLowerCase());
+                        if (typeof obj.code != "undefined" && obj.code != null) {
 
-                        //replace the immediate placholder with a var 
-                        if (overrideType != null) {
-
-
-                            var reg = new RegExp("(" + preg_quote(placeholders[i]) + ")", 'gi');
-
-
-
-                            if (obj[overrideType + '_razor'] != null && typeof obj[overrideType + '_razor'] != undefined && obj[overrideType + '_razor'] != '') {
-                                __mds.templateconverter.bodyText = __mds.templateconverter.bodyText.replace(reg, prepend + '@(' + obj[overrideType + '_razor'] + ')' + append).replace(/item_/gi, prefix + '_');
+                            // add a declaration in the session or item data sections (in C#) 
+                            if (obj.scope == 'session') {
+                                markup = markup.replace(reg, prepend + '@(' + prefix + '_session_' + obj.razor + ')' + append);
+                                __mds.templateconverter.placeholderData['sessionData'].push(obj.code.split('[[scope]]_').join(prefix + '_session_').split('[[scope]]').join(prefix + '_session'));
                             }
-                            else {
-                                __mds.templateconverter.bodyText = __mds.templateconverter.bodyText.replace(reg, prepend + append).replace(/item_/gi, prefix + '_');
-
-                            }
-
-                            if (typeof obj[overrideType] != "undefined" && obj[overrideType] != null) {
-
-                                // add a declaration in the session or item data sections (in C#) 
-                                if (obj.scope == 'session') {
-                                    __mds.templateconverter.sessionData.push(obj[overrideType]);
+                            else if (obj.scope == 'item') {
+                                markup = markup.replace(reg, prepend + '@(' + prefix + '_' + obj.razor + ')' + append);
+                                if (prefix == 'firstProduct') {
+                                    __mds.templateconverter.placeholderData['outerRepeaterItemData'].push(obj.code.split('[[scope]]_').join(prefix + '_').split('[[scope]]').join(prefix));
                                 }
-                                else if (obj.scope == 'item') {
-                                    if (prefix == 'first') {
-                                        __mds.templateconverter.firstItemData.push(obj[overrideType]);
-                                    }
-                                    else {
-                                        __mds.templateconverter.itemData.push(obj[overrideType]);
-                                    }
-
+                                else if (prefix == 'product') {
+                                    __mds.templateconverter.placeholderData['innerRepeaterItemData'].push(obj.code.split('[[scope]]_').join(prefix + '_').split('[[scope]]').join(prefix));
                                 }
                             }
-                            break;
                         }
-                        else {
-                            var reg = new RegExp("(" + preg_quote(placeholders[i]) + ")", 'gi');
-
-                            __mds.templateconverter.bodyText = __mds.templateconverter.bodyText.replace(reg, prepend + '@(' + (obj.razor.indexOf('item_') > -1 ? obj.razor.replace('item_', 'first_') : obj.razor) + ')' + append);
-                            if (typeof obj.code != "undefined" && obj.code != null) {
-
-                                // add a declaration in the session or item data sections (in C#) 
-                                if (obj.scope == 'session') {
-                                    __mds.templateconverter.sessionData.push(obj.code);
-                                }
-                                else if (obj.scope == 'item') {
-                                    if (prefix == 'first') {
-                                        __mds.templateconverter.firstItemData.push(obj.code);
-                                    }
-                                    else {
-                                        __mds.templateconverter.itemData.push(obj.code);
-                                    }
-
-
-                                }
-                            }
-                            break;
-                        }
-
-
+                        break;
 
                     }
                     else if (typeof obj.legacy != "undefined" || obj.legacy != null && obj.legacy == true) {
                         // lowercase legacy placeholders
-                        __mds.templateconverter.bodyText = __mds.templateconverter.bodyText.split(placeholders[i]).join(placeholders[i].toLowerCase());
+                        markup = markup.split(placeholders[i]).join(placeholders[i].toLowerCase());
                     }
                     // make no changes if template in V2 is using the legacy placeholder
                 }
@@ -275,7 +212,7 @@ __mds.templateconverter.convertplaceholders = function (prefix) {
 
 
     // now for the 'custom' session and item fields that contain a colon, these are session and items fields defined by implementation in the script
-    var customPlaceholders = __mds.templateconverter.bodyText.match(/\[\[([iI]|[sS])(ession|tem):[A-z0-9-_^\[]+\]\]/gi);
+    var customPlaceholders = markup.match(/\[\[([iI]|[sS])(ession|tem):[A-z0-9-_^\[]+\]\]/gi);
 
     if (customPlaceholders != null && customPlaceholders.length > 0) {
         // remove duplicates (in a case insensitive manner)
@@ -296,85 +233,49 @@ __mds.templateconverter.convertplaceholders = function (prefix) {
                     itemVar[0] = itemVar[0].toLowerCase();
                 }
 
-                if (prefix == 'first') {
-                    // paste new style razor placeholder into markup (global replace)
-                    __mds.templateconverter.bodyText = __mds.templateconverter.bodyText.split(customPlaceholders[i]).join('@(' + 'first_' + itemVar[0] + ')');
-                    __mds.templateconverter.firstItemData.push('var ' + 'first_' + itemVar[0] + ' = ' + '@TryGetItemField(@firstProduct, \"' + itemVar[0] + '\");');
+                // paste new style razor placeholder into markup (global replace)
+                markup = markup.split(customPlaceholders[i]).join('@(' + prefix + '_' + itemVar[0] + ')');
+
+                if (prefix == "firstProduct") {
+                    __mds.templateconverter.placeholderData['outerRepeaterItemData'].push('var ' + prefix + '_' + itemVar[0] + ' = ' + '@TryGetItemField(@' + prefix + ', \"' + itemVar[0] + '\");');
                 }
-                else {
-                    // paste new style razor placeholder into markup (global replace)
-                    __mds.templateconverter.bodyText = __mds.templateconverter.bodyText.split(customPlaceholders[i]).join('@(' + 'item_' + itemVar[0] + ')');
-                    __mds.templateconverter.itemData.push('var ' + 'item_' + itemVar[0] + ' = ' + '@TryGetItemField(@product, \"' + itemVar[0] + '\");');
+                else if (prefix == "product") {
+                    __mds.templateconverter.placeholderData['innerRepeaterItemData'].push('var ' + prefix + '_' + itemVar[0] + ' = ' + '@TryGetItemField(@' + prefix + ', \"' + itemVar[0] + '\");');
                 }
+
 
             }
             else if (customPlaceholders[i].toLowerCase().indexOf('session:') > -1) {
-                __mds.templateconverter.bodyText = __mds.templateconverter.bodyText.split(customPlaceholders[i]).join('@(' + 'session_' + itemVar[0] + ')');
-                __mds.templateconverter.sessionData.push('var ' + 'session_' + itemVar[0] + ' = ' + '@TryGetSessionField(\"' + itemVar[0] + '\");');
+                markup = markup.split(customPlaceholders[i]).join('@(' + prefix + '_' + 'session_' + itemVar[0] + ')');
+                __mds.templateconverter.placeholderData['sessionData'].push('var ' + prefix + '_' + 'session_' + itemVar[0] + ' = ' + '@TryGetSessionField(\"' + itemVar[0] + '\");');
             }
         }
     }
+    return markup;
 }
 
 
-
-
-__mds.templateconverter.hasoverride = function (key) {
-
-    //if (key == '[[currencycode]]' || key == '[[currencysymbol]]') {
-    //    if (document.getElementById('overrideCurrencyYes').checked) {
-    //        return "override_1";
-    //    }
-    //    else if (document.getElementById('overrideCurrencyCustom').checked) {
-    //        return "override_2";
-    //    }
-    //}
-    return null;
-}
 
 __mds.templateconverter.replaceitemrepeater = function () {
 
-    // obtain existing repeater strings (irrespective of case)
-    // repeater tags may additionally be surrounded with <!-- -->, so we take that into account
-    var productListStart = __mds.templateconverter.bodyText.match(/(<!--){0,1}\[\[productlist:start\]\](-->){0,1}/gi);
-    var productListEnd = __mds.templateconverter.bodyText.match(/(<!--){0,1}\[\[productlist:end\]\](-->){0,1}/gi);
     var itemDataString = '';
 
-    //if (productListStart != null && productListStart.length > 0 && productListEnd != null && productListEnd.length > 0) {
+    // if (productListStart != null && productListStart.length > 0 && productListEnd != null && productListEnd.length > 0) {
     itemDataString = '\n@{ ';
 
-    for (var i = 0; i < __mds.templateconverter.itemData.length; i++) {
-        itemDataString += '\n' + __mds.templateconverter.itemData[i];
+    for (var i = 0; i < __mds.templateconverter.placeholderData['innerRepeaterItemData'].length; i++) {
+        itemDataString += '\n' + __mds.templateconverter.placeholderData['innerRepeaterItemData'][i];
     }
 
-    itemDataString += '\n}';
+    itemDataString += '\n}\n';
 
-    __mds.templateconverter.bodyText = __mds.templateconverter.outerrepeater;
+    __mds.templateconverter.bodyText = __mds.templateconverter.bodyText.split('@(itemRepeaterData)').join(itemDataString);
 
-    if (__mds.templateconverter.itemrepeater != null) {
-        __mds.templateconverter.bodyText = __mds.templateconverter.bodyText.replace('@(RepeaterHTML)', "@foreach(var product in Model.Products){\n" + itemDataString + '\n' + '@(RepeaterHTML)' + '\n}');
-        __mds.templateconverter.bodyText = __mds.templateconverter.bodyText.replace('@(RepeaterHTML)', __mds.templateconverter.itemrepeater);
-    }
-    //// add new foreach loop around area where product list tags were 
-    //productListStart.map(function (start) {
-    //    __mds.templateconverter.bodyText = __mds.templateconverter.bodyText.split(start).join('@foreach(var product in Model.Products){');
-    //});
-
-    //productListEnd.map(function (end) {
-    //    __mds.templateconverter.bodyText = __mds.templateconverter.bodyText.split(end).join('}');
-    //});
-
-    //  __mds.templateconverter.bodyText = __mds.templateconverter.bodyText.replace('<!--@foreach(var product in Model.Products){-->', '@foreach(var product in Model.Products){')
-    //  __mds.templateconverter.bodyText = __mds.templateconverter.bodyText.replace(__mds.templateconverter.bodyText.match(/\@foreach\(var product in Model\.Products[^>]+>/)[0], __mds.templateconverter.bodyText.match(/\@foreach\(var product in Model\.Products[^>]+>/)[0] + ' ' + itemDataString);
-    // }
-    //else {
-    //    console.log('ERROR: This page contains no productlist start/end tags or there is a tag mismatch.');
-    //}
 }
 
 __mds.templateconverter.upgradelinks = function () {
     // match all links, it is assumed that a link will always close with a closing speech mark with the old style 
-    var links = __mds.templateconverter.outerrepeater.match(/\[\[[Ll]ink\]\][0-9]+\|[^"]+/g);
+    var links = __mds.templateconverter.bodyText.match(/\[\[[Ll]ink\]\][0-9]+\|[^"]+/g);
 
     if (links != null && links.length > 0) {
 
@@ -382,23 +283,8 @@ __mds.templateconverter.upgradelinks = function () {
             // remove the old start tag and replace with new starting and closing tags
             var replaceWith = el.replace(/\[\[[Ll]ink\]\][0-9]+\|/, '[[link]]');
             replaceWith += '[[/link]]';
-            __mds.templateconverter.outerrepeater = __mds.templateconverter.outerrepeater.replace(el, replaceWith);
+            __mds.templateconverter.bodyText = __mds.templateconverter.bodyText.replace(el, replaceWith);
         });
-    }
-
-    if (__mds.templateconverter.itemrepeater != null) {
-        // match all links, it is assumed that a link will always close with a closing speech mark with the old style 
-        links = __mds.templateconverter.itemrepeater.match(/\[\[[Ll]ink\]\][0-9]+\|[^"]+/g);
-
-        if (links != null && links.length > 0) {
-
-            links.map(function (el) {
-                // remove the old start tag and replace with new starting and closing tags
-                var replaceWith = el.replace(/\[\[[Ll]ink\]\][0-9]+\|/, '[[link]]');
-                replaceWith += '[[/link]]';
-                __mds.templateconverter.itemrepeater = __mds.templateconverter.itemrepeater.replace(el, replaceWith);
-            });
-        }
     }
 }
 
@@ -458,7 +344,6 @@ __mds.templateconverter.compileSalutation = function () {
     }
 
 }
-
 
 document.addEventListener('DOMContentLoaded', function () {
     //initialse fancy JQuery UI, this is the only part of the code that references JQuery, no other parts should use it
@@ -522,15 +407,15 @@ document.addEventListener('DOMContentLoaded', function () {
     var button, templateArea;
     button = document.getElementById('convert');
     templateArea = document.getElementById('templateArea');
-    var request;
+    var schemaRequest;
 
-    request = new XMLHttpRequest();
-    request.open('GET', 'schema/placeholder.js', true);
+    schemaRequest = new XMLHttpRequest();
+    schemaRequest.open('GET', 'schema/placeholder.js', true);
 
-    request.onload = function () {
-        if (request.status >= 200 && request.status < 400) {
+    schemaRequest.onload = function () {
+        if (schemaRequest.status >= 200 && schemaRequest.status < 400) {
             // obtain the schema containing the rules for dealing with old placeholders 
-            __mds.templateconverter.schema = JSON.parse(request.responseText);
+            __mds.templateconverter.schema = JSON.parse(schemaRequest.responseText);
 
             // add all of our listeners 
             // button click event to fire process off
@@ -549,12 +434,34 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     };
 
-    request.onerror = function () {
+    schemaRequest.onerror = function () {
         // There was a connection error of some sort
         console.log('failed to retrieve schema');
     };
 
     // get schema on page ready
-    request.send();
+    schemaRequest.send();
+
+
+    var boilerplateRequest;
+
+    boilerplateRequest = new XMLHttpRequest();
+    boilerplateRequest.open('GET', 'schema/Boilerplate.txt', true);
+
+    boilerplateRequest.onload = function () {
+        if (boilerplateRequest.status >= 200 && boilerplateRequest.status < 400) {
+            // obtain the schema containing the rules for dealing with old placeholders 
+            __mds.templateconverter.boilerplateTemplate = boilerplateRequest.responseText;
+
+        }
+    };
+
+    boilerplateRequest.onerror = function () {
+        // There was a connection error of some sort
+        console.log('failed to retrieve boilerplate template');
+    };
+
+    // get schema on page ready
+    boilerplateRequest.send();
 });
 

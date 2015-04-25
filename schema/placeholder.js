@@ -3,8 +3,8 @@
         {
             "name": "[[totalprice]]",
             "scope": "item",
-            "razor": "item_totalprice",
-            "code": "var item_totalpricedouble = 0.00; item_totalpricedouble = @product.Price * @product.Quantity; var item_totalprice = Math.Round(item_totalpricedouble, 2).ToString(\"0.00\");"
+            "razor": "totalprice",
+            "code": "var [[scope]]_totalpricedouble = 0.00; [[scope]]_totalpricedouble = @[[scope]].Price * @[[scope]].Quantity; var [[scope]]_totalprice = Math.Round([[scope]]_totalpricedouble, 2).ToString(\"0.00\");"
         },
         {
             "name": "[[webview]]",
@@ -20,92 +20,114 @@
             "name": "[[customername]]",
             "scope": "session",
             "razor": "salutation",
-            "code": "var salutation = \"Customer\"; if(Model.Customer != null && string.IsNullOrEmpty(Model.Customer.FirstName) == false) { salutation = String.Format(\"{0},\", Model.Customer.FirstName); }"
+            "code": "var [[scope]]_salutation = \"Customer\"; if(Model.Customer != null && string.IsNullOrEmpty(Model.Customer.FirstName) == false) { [[scope]]_salutation = String.Format(\"{0},\", Model.Customer.FirstName); }"
         },
         {
             "name": "[[totalvalue]]",
             "scope": "session",
-            "code": "var session_totalvaluedouble = 0.00; session_totalvaluedouble = @Model.BasketValue; var session_totalvalue = Math.Round(session_totalvaluedouble, 2).ToString(\"0.00\");", 
-            "razor": "session_totalvalue"
+            "code": "var [[scope]]_totalvaluedouble = 0.00; [[scope]]_totalvaluedouble = @Model.BasketValue; var [[scope]]_totalvalue = Math.Round([[scope]]_totalvaluedouble, 2).ToString(\"0.00\");", 
+            "razor": "totalvalue"
 
         },
         {
             "name": "[[itemimage]]",
             "scope": "item",
-            "razor": "product.ImageUrl", 
+            "razor": "imageurl", 
+            "code": "var [[scope]]_imageurl = [[scope]].ImageUrl;",
             "prepend": { "id" : "imageReplaceUrl", "value" : "value" }
 
         },
         {
             "name": "[[itemname]]",
             "scope": "item",
-            "razor": "product.Name"
+            "razor": "productName", 
+            "code": "var [[scope]]_productName = @[[scope]].Name;"
 
         },
          {
              "name": "[[itemvalue]]",
              "scope": "item",
-             "razor": "item_price",
-             "code": "var item_pricedouble = 0.00; item_pricedouble = @product.Price; var item_price = Math.Round(item_pricedouble, 2).ToString(\"0.00\");"
+             "razor": "price",
+             "code": "var [[scope]]_pricedouble = 0.00; [[scope]]_pricedouble = @[[scope]].Price; var [[scope]]_price = Math.Round([[scope]]_pricedouble, 2).ToString(\"0.00\");"
 
          },
          {
              "name": "[[itemquantity]]",
              "scope": "item",
-             "razor": "product.Quantity"
+             "razor": "quantity", 
+             "code": "var [[scope]]_quantity = [[scope]].Quantity;"
 
          },
           {
               "name": "[[itemquantity1]]",
               "scope": "item",
-              "razor": "product.Quantity"
+              "razor": "quantity1", 
+              "code": "var [[scope]]_quantity1 = [[scope]].Quantity;"
 
           },
           {
               "name": "[[itemcurrency]]",
               "scope": "session",
-              "razor": "session_cur",
-              "code": "var session_cur = @RenderCurrencySymbol();",
+              "razor": "cur",
+              "code": "var [[scope]]_cur = @RenderCurrencySymbol();",
               "comment": "this is the apparent standard placeholder for currency, this still needs to be tested and clarified, if all fails, use session:cur and add it manually"
           },
           {
-                "name": "[[currencysymbol]]",
-                "scope": "session",
-                "razor": "session_cur",
-                "code": "var session_cur = @RenderCurrencySymbol();",
-                "comment": "this is the apparent standard placeholder for currency, this still needs to be tested and clarified, if all fails, use session:cur and add it manually"
+              "name": "[[currencysymbol]]",
+              "scope": "session",
+              "razor": "cur",
+              "code": "var [[scope]]_cur = @RenderCurrencySymbol();",
+              "comment": "this is the apparent standard placeholder for currency, this still needs to be tested and clarified, if all fails, use session:cur and add it manually"
           },
           {
               "name": "[[customfield1]]",
               "scope": "item",
               "razor": "customfield1",
-              "code": "var customfield1 = @TryGetItemField(@product, \"f1\");"
+              "code": "var [[scope]]_customfield1 = @TryGetItemField(@[[scope]], \"f1\");"
 
           },
            {
                "name": "[[numitems]]",
                "scope": "session", 
-               "code": "var numitems = String.Format(\"{0}\", Model.Products.Sum(p => p.Quantity));",
+               "code": "var [[scope]]_numitems = String.Format(\"{0}\", Model.Products.Sum(p => p.Quantity));",
                "razor": "numitems"
            }, 
            {
                "name": "[[customeremail]]", 
                "scope": "session", 
-               "code": "var email = @Model.Customer.Email;",
+               "code": "var [[scope]]_email = @Model.Customer.Email;",
                "razor": "email"
            }, 
            {
                "name": "[[itemid]]", 
                "scope": "item", 
-               "code": "var itemid = @product.ProductId;",
+               "code": "var [[scope]]_itemid = @[[scope]].ProductId;",
                "razor": "itemid"
            },
            {
                "name": "[[numberofadults]]", 
                "scope": "item", 
-               "code": "var item_na = @TryGetItemField(@product, \"na\");", 
-               "razor": "item_na"
-           }
+               "code": "var [[scope]]_na = @TryGetItemField(@[[scope]], \"na\");", 
+               "razor": "na"
+           },
+            {
+                "name": "[[numberofnights]]", 
+                "scope": "item", 
+                "code": "var [[scope]]_nn = @TryGetItemField(@[[scope]], \"nn\");", 
+                "razor": "nn"
+            },
+             {
+                 "name": "[[numberofchildren]]", 
+                 "scope": "item", 
+                 "code": "var [[scope]]_nc = @TryGetItemField(@[[scope]], \"nc\");", 
+                 "razor": "nc"
+             },
+              {
+                  "name": "[[numberofinfants]]", 
+                  "scope": "item", 
+                  "code": "var [[scope]]_ni = @TryGetItemField(@[[scope]], \"ni\");", 
+                  "razor": "ni"
+              }
 
 
     ]

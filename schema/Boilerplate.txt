@@ -1,0 +1,64 @@
+﻿<!DOCTYPE html>
+
+@* Required Dependencies *@
+@using System.Globalization;
+
+@{
+    var firstProduct = Model.Products.FirstOrDefault();
+}
+
+
+@* Helpers *@
+@helper RenderCurrencySymbol()
+{
+    // Reference the .NET Currency symbol libraries to obtain correct currency code
+    string symbol = string.Empty;
+    CultureInfo[] cultures = CultureInfo.GetCultures(CultureTypes.SpecificCultures);
+
+    foreach (CultureInfo ci in cultures)
+    {
+        RegionInfo ri = new RegionInfo(ci.LCID);
+        if (ri.ISOCurrencySymbol == Model.CurrencyCode)
+        {
+            symbol = ri.CurrencySymbol;
+            break;
+        }
+    }
+
+    //render the symbol
+    <span>@(symbol)</span>
+}
+
+@helper RenderTemplateBody()
+{ 
+ // local definition required 
+ var firstProduct = Model.Products.FirstOrDefault();
+ if(firstProduct != null){
+	         @(sessionFields)
+		<div>
+        @(templateBody)
+		</div> 
+	
+ }
+}
+
+<html>
+<head>
+    <title>Razor Boilerplate 1.01</title>
+
+    <style type="text/css">
+                @(templateStyle)
+    </style>
+</head>
+<body>
+   @if (firstProduct != null)
+    {
+		@RenderTemplateBody(); 
+	}
+    else
+    {
+        <h1>No Data found to populate template.</h1>
+    }
+</body>
+
+</html>
