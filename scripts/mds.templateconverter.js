@@ -48,6 +48,39 @@ __mds.templateconverter.converttemplate = function (str) {
     var body, style;
     var sessionDataSection = '';
 
+
+    // clear UI for new conversion 
+    __mds.templateconverter.cleardata();
+
+    __mds.templateconverter.extractmarkup(document.getElementById('templateArea').value);
+    __mds.templateconverter.extractstyle(document.getElementById('templateArea').value);
+
+    // update placeholders to use Razor syntac
+    __mds.templateconverter.markup.outerRepeaterMarkup = __mds.templateconverter.convertplaceholders('firstProduct', __mds.templateconverter.markup.outerRepeaterMarkup);
+
+    // do we have a repeater? 
+    if (__mds.templateconverter.markup.repeaterMarkup != null) {
+        __mds.templateconverter.markup.repeaterMarkup = __mds.templateconverter.convertplaceholders('product', __mds.templateconverter.markup.repeaterMarkup);
+
+    }
+    __mds.templateconverter.loadboilerplatetemplate();
+    __mds.templateconverter.addouterrepeatermarkuptotemplate(); 
+    // if we have repeater, add that markup (include razor iteration code) back into template 
+    if (__mds.templateconverter.markup.repeaterMarkup != null) {
+        __mds.templateconverter.replaceitemrepeater();
+        __mds.templateconverter.replaceitemrepeaterdata();
+    }
+    //
+    __mds.templateconverter.replaceitemrepeater();
+    __mds.templateconverter.applysessiondata();
+    __mds.templateconverter.upgradelinks();
+    __mds.templateconverter.escapemediaqueries();
+    __mds.templateconverter.addstyletotemplate();
+    __mds.templateconverter.setoutputmarkup(__mds.templateconverter.bodyText);
+}
+
+__mds.templateconverter.cleardata = function () {
+
     __mds.templateconverter.markup = {
         "style": {},
         "repeaterMarkup": {},
@@ -60,31 +93,34 @@ __mds.templateconverter.converttemplate = function (str) {
         "outerRepeaterItemData": []
     };
 
-    __mds.templateconverter.bodyText = ';'
+    __mds.templateconverter.bodyText = '';
+    // clear results view
+    document.getElementById('bodyArea').value = ''; 
 
-    __mds.templateconverter.extractmarkup(document.getElementById('templateArea').value);
-    __mds.templateconverter.extractstyle(document.getElementById('templateArea').value);
+}
 
-    __mds.templateconverter.markup.outerRepeaterMarkup = __mds.templateconverter.convertplaceholders('firstProduct', __mds.templateconverter.markup.outerRepeaterMarkup);
-
-    if (__mds.templateconverter.markup.repeaterMarkup != null) {
-        __mds.templateconverter.markup.repeaterMarkup = __mds.templateconverter.convertplaceholders('product', __mds.templateconverter.markup.repeaterMarkup);
-
-    }
-    __mds.templateconverter.bodyText = __mds.templateconverter.boilerplateTemplate;
+__mds.templateconverter.addouterrepeatermarkuptotemplate = function () {
+    // add markup to template 
     __mds.templateconverter.bodyText = __mds.templateconverter.bodyText.split('@(templateBody)').join(__mds.templateconverter.markup.outerRepeaterMarkup);
-    if (__mds.templateconverter.markup.repeaterMarkup != null) {
-        __mds.templateconverter.bodyText = __mds.templateconverter.bodyText.split('@(ItemRepeater)').join('@foreach(var product in Model.Products)\n{\n<div>@(itemRepeaterData)\n' + __mds.templateconverter.markup.repeaterMarkup + '</div>\n}\n');
+}
+__mds.templateconverter.loadboilerplatetemplate = function () {
+    // load boilerplate template into body 
+    __mds.templateconverter.bodyText = __mds.templateconverter.boilerplateTemplate;
+}
+__mds.templateconverter.replaceitemrepeater = function () {
+    __mds.templateconverter.bodyText = __mds.templateconverter.bodyText.split('@(ItemRepeater)').join('@foreach(var product in Model.Products)\n{\n<div>@(itemRepeaterData)\n' + __mds.templateconverter.markup.repeaterMarkup + '</div>\n}\n');
+}
+__mds.templateconverter.setoutputmarkup = function (markup) {
+    document.getElementById('bodyArea').value = markup;
+}
 
-    }
-    __mds.templateconverter.applysessiondata();
-    __mds.templateconverter.replaceitemrepeater();
-    __mds.templateconverter.upgradelinks();
+__mds.templateconverter.addstyletotemplate = function () {
+    __mds.templateconverter.bodyText = __mds.templateconverter.bodyText.split("@(templateStyle)").join(__mds.templateconverter.markup.style);
+}
+
+__mds.templateconverter.escapemediaqueries = function () {
     __mds.templateconverter.bodyText = __mds.templateconverter.bodyText.split('@media').join('@@media');
     __mds.templateconverter.markup.style = __mds.templateconverter.markup.style.split('@media').join('@@media');
-    __mds.templateconverter.bodyText = __mds.templateconverter.bodyText.split("@(templateStyle)").join(__mds.templateconverter.markup.style);
-
-    document.getElementById('bodyArea').value = __mds.templateconverter.bodyText;
 }
 
 __mds.templateconverter.applysessiondata = function () {
@@ -256,7 +292,7 @@ __mds.templateconverter.convertplaceholders = function (prefix, markup) {
 
 
 
-__mds.templateconverter.replaceitemrepeater = function () {
+__mds.templateconverter.replaceitemrepeaterdata = function () {
 
     var itemDataString = '';
 
@@ -450,7 +486,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     boilerplateRequest.onload = function () {
         if (boilerplateRequest.status >= 200 && boilerplateRequest.status < 400) {
-            // obtain the schema containing the rules for dealing with old placeholders 
+            // obtain base template for building razor emails
             __mds.templateconverter.boilerplateTemplate = boilerplateRequest.responseText;
 
         }
